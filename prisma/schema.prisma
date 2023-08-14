@@ -14,7 +14,7 @@ model User{
   email String @unique
   hash String
   firstName String?
-  lastNAme String?
+  lastName String?
   @@map("users")
   bookmarks Bookmark[]
 }
@@ -29,4 +29,29 @@ model Bookmark{
   userId Int
   user User @relation(fields: [userId], references: [id])
   @@map("bookmarks")
+}
+
+
+model Category{
+  id Int @id @default(autoincrement())
+  createAt DateTime @default(now())
+  updateAt DateTime @default(now())
+  name String
+  description String?
+  product Product? @relation(fields: [id], references: [productId])
+  @@map("categories")
+}
+
+model Product{
+  productId Int @id @default(autoincrement())
+  createAt DateTime @default(now())
+  updateAt DateTime @default(now())
+  name String
+  description String?
+  unitPrice Float
+  quantinty Int
+  categoryId Int
+  image String
+  @@map("products")
+  categories Category[]
 }
