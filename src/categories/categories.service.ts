@@ -50,7 +50,10 @@ export class CategoriesService {
 
   async updateCategory(id: number, category: CategoryDto) {
     try {
-      return this.prisma.category.update({ where: { id }, data: category });
+      return this.prisma.category.update({
+        where: { id },
+        data: { ...category, updateAt: new Date() },
+      });
     } catch (error) {
       console.log(error);
     }

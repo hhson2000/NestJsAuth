@@ -15,22 +15,9 @@ model User{
   hash String
   firstName String?
   lastName String?
+  role Int @default(1)
   @@map("users")
-  bookmarks Bookmark[]
 }
-
-model Bookmark{
-  id Int @id @default(autoincrement())
-  createAt DateTime @default(now())
-  updateAt DateTime @default(now())
-  title String
-  description String?
-  link String
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-  @@map("bookmarks")
-}
-
 
 model Category{
   id Int @id @default(autoincrement())
@@ -38,12 +25,12 @@ model Category{
   updateAt DateTime @default(now())
   name String
   description String?
-  product Product? @relation(fields: [id], references: [productId])
+  product Product[]
   @@map("categories")
 }
 
 model Product{
-  productId Int @id @default(autoincrement())
+  productId String @id
   createAt DateTime @default(now())
   updateAt DateTime @default(now())
   name String
@@ -52,6 +39,67 @@ model Product{
   quantinty Int
   categoryId Int
   image String
+  orderDetails OrderDetails[]
+  category Category? @relation(fields: [categoryId], references: [id])
   @@map("products")
-  categories Category[]
+}
+
+model Employees{
+  employeeId Int @id @default(autoincrement())
+  createAt DateTime @default(now())
+  updateAt DateTime @default(now())
+  dob DateTime @default(now())
+  firstName String
+  lastName String
+  phone String
+  address String?
+  reportTo Int? @unique
+  manager Employees? @relation("EmployeeToManager", fields: [reportTo], references: [employeeId])
+  subordinates Employees? @relation("EmployeeToManager")
+  orders Orders[] @relation("EmployeeToOrders")
+  @@map("employees")
+}
+
+model Orders{
+  orderId Int @id @default(autoincrement())
+  createAt DateTime @default(now())
+  updateAt DateTime @default(now())
+  requiredDate DateTime 
+  shipedDate DateTime
+  shipAddress String
+  description String
+  postalCode Int
+  totalPrice Float
+  employee Employees @relation("EmployeeToOrders", fields: [employeeId], references: [employeeId])
+  employeeId  Int
+  orderDetails OrderDetails[]
+  customer Customers @relation(fields: [customerId], references: [customerId])
+  customerId Int
+  @@map("orders")
+}
+
+model OrderDetails{
+  order Orders @relation(fields: [orderId], references: [orderId])
+  orderId Int
+  product Product @relation(fields: [productId], references: [productId])
+  productId String
+  createAt DateTime @default(now())
+  updateAt DateTime @default(now())
+  unitPrice Float
+  quantity Int
+  discount Float
+  @@unique([orderId, productId])
+  @@map("order detail")
+}
+
+model Customers{
+  customerId Int @id @default(autoincrement())
+  createAt DateTime @default(now())
+  updateAt DateTime @default(now())
+  email String @unique
+  fullname String?
+  address String?
+  phone String
+  orders Orders[]
+  @@map("customer")
 }
